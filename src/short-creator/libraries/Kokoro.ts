@@ -58,7 +58,13 @@ export class Kokoro {
     header.writeUInt32LE(36 + totalDataLength, 4);
     header.writeUInt32LE(totalDataLength, 40);
 
-    return Buffer.concat([header, ...dataParts]);
+    // Neuere Typen unterscheiden Buffer und ArrayBuffer: ein eigener
+    // ArrayBuffer mit genau diesen Bytes (Buffer kann ein Pool-Ausschnitt sein).
+    const merged = Buffer.concat([header, ...dataParts]);
+    return merged.buffer.slice(
+      merged.byteOffset,
+      merged.byteOffset + merged.byteLength,
+    ) as ArrayBuffer;
   }
 
   static async init(dtype: kokoroModelPrecision): Promise<Kokoro> {
