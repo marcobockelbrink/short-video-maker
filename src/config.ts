@@ -74,7 +74,8 @@ export class Config {
     this.staticDirPath = path.join(this.packageDirPath, "static");
     this.musicDirPath = path.join(this.staticDirPath, "music");
 
-    this.pexelsApiKey = process.env.PEXELS_API_KEY as string;
+    // Abwandlung: Hintergrundvideos kommen von Pixabay statt Pexels
+    this.pexelsApiKey = process.env.PIXABAY_API_KEY as string;
     this.logLevel = (process.env.LOG_LEVEL || defaultLogLevel) as pino.Level;
     this.whisperVerbose = process.env.WHISPER_VERBOSE === "true";
     this.port = process.env.PORT ? parseInt(process.env.PORT) : defaultPort;
@@ -103,7 +104,7 @@ export class Config {
   public ensureConfig() {
     if (!this.pexelsApiKey) {
       throw new Error(
-        "PEXELS_API_KEY environment variable is missing. Get your free API key: https://www.pexels.com/api/key/ - see how to run the project: https://github.com/gyoridavid/short-video-maker",
+        "PIXABAY_API_KEY environment variable is missing. Get your free API key: https://pixabay.com/api/docs/",
       );
     }
   }

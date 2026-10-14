@@ -1,3 +1,17 @@
+> **Fork of [gyoridavid/short-video-maker](https://github.com/gyoridavid/short-video-maker) (MIT) — switched from Pexels to Pixabay.**
+>
+> Changes compared to the original:
+>
+> - Background videos come from the **Pixabay** video API instead of Pexels (`src/short-creator/libraries/Pexels.ts`; class and method names are kept so callers stay untouched). Pixabay has no orientation filter, so the file is picked by its dimensions (exact 1080×1920 / 1920×1080, otherwise the smallest file with the right orientation that is large enough).
+> - The key is read from `PIXABAY_API_KEY` (free: <https://pixabay.com/api/docs/>) instead of `PEXELS_API_KEY`.
+> - `main-tiny.Dockerfile` pins pnpm to 9.15.9: newer pnpm versions abort with `ERR_PNPM_IGNORED_BUILDS` on this lockfile.
+> - `video-server.sh` starts and stops the container on demand (no autostart, bound to 127.0.0.1). The key goes into a local `.env`, never into the repository.
+> - Not adapted: the upstream tests (`Pexels.test.ts`) still describe the Pexels behaviour. The voice-over is still English only.
+>
+> Build: `docker build -f main-tiny.Dockerfile -t short-video-maker:lokal .`
+>
+> ---
+
 ## [📚 Join our Skool community for support, premium content and more!](https://www.skool.com/ai-agents-az/about?s1m)
 
 ### Be part of a growing community and help us create more content like this

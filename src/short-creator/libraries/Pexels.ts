@@ -1,4 +1,6 @@
 /* eslint-disable @remotion/deterministic-randomness */
+// Abwandlung: Klasse und Methode heißen weiter PexelsAPI/findVideo, damit die
+// Aufrufer unberührt bleiben; die Videos kommen aber von der Pixabay-API.
 import { getOrientationConfig } from "../../components/utils";
 import { logger } from "../../logger";
 import { OrientationEnum, type Video } from "../../types/shorts";
@@ -7,6 +9,13 @@ const jokerTerms: string[] = ["nature", "globe", "space", "ocean"];
 const durationBufferSeconds = 3;
 const defaultTimeoutMs = 5000;
 const retryTimes = 3;
+
+type PixabayFile = { url: string; width: number; height: number };
+type PixabayHit = {
+  id: number;
+  duration: number;
+  videos: Record<string, PixabayFile | undefined>;
+};
 
 export class PexelsAPI {
   constructor(private API_KEY: string) {}
@@ -23,46 +32,32 @@ export class PexelsAPI {
     }
     logger.debug(
       { searchTerm, minDurationSeconds, orientation },
-      "Searching for video in Pexels API",
+      "Searching for video in Pixabay API",
     );
-    const headers = new Headers();
-    headers.append("Authorization", this.API_KEY);
     const response = await fetch(
-      `https://api.pexels.com/videos/search?orientation=${orientation}&size=medium&per_page=80&query=${encodeURIComponent(searchTerm)}`,
+      `https://pixabay.com/api/videos/?key=${encodeURIComponent(this.API_KEY)}&per_page=50&safesearch=true&q=${encodeURIComponent(searchTerm.slice(0, 100))}`,
       {
         method: "GET",
-        headers,
         redirect: "follow",
         signal: AbortSignal.timeout(timeout),
       },
     )
       .then((res) => {
         if (!res.ok) {
-          if (res.status === 401) {
+          if (res.status === 400 || res.status === 401) {
             throw new Error(
-              "Invalid Pexels API key - please make sure you get a valid key from https://www.pexels.com/api and set it in the environment variable PEXELS_API_KEY",
+              "Invalid Pixabay API key - please get a key from https://pixabay.com/api/docs/ and set it in the environment variable PIXABAY_API_KEY",
             );
           }
-          throw new Error(`Pexels API error: ${res.status} ${res.statusText}`);
+          throw new Error(`Pixabay API error: ${res.status} ${res.statusText}`);
         }
         return res.json();
       })
       .catch((error: unknown) => {
-        logger.error(error, "Error fetching videos from Pexels API");
+        logger.error(error, "Error fetching videos from Pixabay API");
         throw error;
       });
-    const videos = response.videos as {
-      id: string;
-      duration: number;
-      video_files: {
-        fps: number;
-        quality: string;
-        width: number;
-        height: number;
-        id: string;
-        link: string;
-      }[];
-    }[];
+    const videos = response.hits as PixabayHit[];
 
     const { width: requiredVideoWidth, height: requiredVideoHeight } =
       getOrientationConfig(orientation);
@@ -70,46 +65,52 @@ export class PexelsAPI {
     if (!videos || videos.length === 0) {
       logger.error(
         { searchTerm, orientation },
-        "No videos found in Pexels API",
+        "No videos found in Pixabay API",
       );
       throw new Error("No videos found");
     }
 
-    // find all the videos that fits the criteria, then select one randomly
+    // Pixabay kennt keinen Orientierungsfilter: nach Maßen auswählen.
+    // Erst exakt passende Größe, sonst die kleinste Datei mit richtiger
+    // Ausrichtung, die mindestens so groß ist wie verlangt.
+    const portrait = requiredVideoHeight > requiredVideoWidth;
     const filteredVideos = videos
       .map((video) => {
-        if (excludeIds.includes(video.id)) {
+        if (excludeIds.includes(String(video.id))) {
           return;
         }
-        if (!video.video_files.length) {
+        if (video.duration < minDurationSeconds + durationBufferSeconds) {
           return;
         }
-
-        // calculate the real duration of the video by converting the FPS to 25
-        const fps = video.video_files[0].fps;
-        const duration =
-          fps < 25 ? video.duration * (fps / 25) : video.duration;
-
-        if (duration >= minDurationSeconds + durationBufferSeconds) {
-          for (const file of video.video_files) {
-            if (
-              file.quality === "hd" &&
-              file.width === requiredVideoWidth &&
-              file.height === requiredVideoHeight
-            ) {
-              return {
-                id: video.id,
-                url: file.link,
-                width: file.width,
-                height: file.height,
-              };
-            }
-          }
+        const files = Object.values(video.videos ?? {}).filter(
+          (f): f is PixabayFile => !!f && !!f.url && f.width > 0,
+        );
+        const exact = files.find(
+          (f) =>
+            f.width === requiredVideoWidth && f.height === requiredVideoHeight,
+        );
+        const fallback = files
+          .filter(
+            (f) =>
+              f.height > f.width === portrait &&
+              f.width >= requiredVideoWidth &&
+              f.height >= requiredVideoHeight,
+          )
+          .sort((a, b) => a.width - b.width)[0];
+        const file = exact ?? fallback;
+        if (!file) {
+          return;
         }
+        return {
+          id: String(video.id),
+          url: file.url,
+          width: file.width,
+          height: file.height,
+        };
       })
       .filter(Boolean);
     if (!filteredVideos.length) {
-      logger.error({ searchTerm }, "No videos found in Pexels API");
+      logger.error({ searchTerm }, "No videos found in Pixabay API");
       throw new Error("No videos found");
     }
 
@@ -119,7 +120,7 @@ export class PexelsAPI {
 
     logger.debug(
       { searchTerm, video: video, minDurationSeconds, orientation },
-      "Found video from Pexels API",
+      "Found video from Pixabay API",
     );
 
     return video;
@@ -173,13 +174,13 @@ export class PexelsAPI {
           throw error;
         }
 
-        logger.error(error, "Error finding video in Pexels API for term");
+        logger.error(error, "Error finding video in Pixabay API for term");
       }
     }
     logger.error(
       { searchTerms },
-      "No videos found in Pexels API for the given terms",
+      "No videos found in Pixabay API for the given terms",
     );
-    throw new Error("No videos found in Pexels API");
+    throw new Error("No videos found in Pixabay API");
   }
 }
