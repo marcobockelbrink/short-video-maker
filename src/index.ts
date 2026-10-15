@@ -3,6 +3,7 @@ import path from "path";
 import fs from "fs-extra";
 
 import { Kokoro } from "./short-creator/libraries/Kokoro";
+import { Piper } from "./short-creator/libraries/Piper";
 import { Remotion } from "./short-creator/libraries/Remotion";
 import { Whisper } from "./short-creator/libraries/Whisper";
 import { FFMpeg } from "./short-creator/libraries/FFmpeg";
@@ -33,8 +34,11 @@ async function main() {
 
   logger.debug("initializing remotion");
   const remotion = await Remotion.init(config);
-  logger.debug("initializing kokoro");
-  const kokoro = await Kokoro.init(config.kokoroModelPrecision);
+  logger.debug(`initializing ${config.ttsEngine}`);
+  const kokoro =
+    config.ttsEngine === "piper"
+      ? await Piper.init(config)
+      : await Kokoro.init(config.kokoroModelPrecision);
   logger.debug("initializing whisper");
   const whisper = await Whisper.init(config);
   logger.debug("initializing ffmpeg");

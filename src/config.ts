@@ -3,6 +3,7 @@ import "dotenv/config";
 import os from "os";
 import fs from "fs-extra";
 import pino from "pino";
+import type { Language } from "@remotion/install-whisper-cpp";
 import { kokoroModelPrecision, whisperModels } from "./types/shorts";
 
 const defaultLogLevel: pino.Level = "info";
@@ -46,6 +47,9 @@ export class Config {
   public whisperVersion: string = whisperVersion;
   public whisperModel: whisperModels = defaultWhisperModel;
   public kokoroModelPrecision: kokoroModelPrecision = "fp32";
+  // Abwandlung: Sprechmaschine (kokoro | piper) und Sprache der Untertitel
+  public ttsEngine: "kokoro" | "piper" = "kokoro";
+  public whisperLanguage?: Language;
 
   // docker-specific, performance-related settings to prevent memory issues
   public concurrency?: number;
@@ -84,6 +88,12 @@ export class Config {
 
     if (process.env.WHISPER_MODEL) {
       this.whisperModel = process.env.WHISPER_MODEL as whisperModels;
+    }
+    if (process.env.TTS_ENGINE === "piper") {
+      this.ttsEngine = "piper";
+    }
+    if (process.env.WHISPER_LANGUAGE) {
+      this.whisperLanguage = process.env.WHISPER_LANGUAGE as Language;
     }
     if (process.env.KOKORO_MODEL_PRECISION) {
       this.kokoroModelPrecision = process.env
