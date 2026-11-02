@@ -1,4 +1,4 @@
-FROM ubuntu:22.04 AS install-whisper
+FROM ubuntu:22.04@sha256:076e7bf82319619f28dd0aa9c02ab34b055ad37100395b4f49a2ffba04fb5e11 AS install-whisper
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt update
 # whisper install dependencies
@@ -16,7 +16,7 @@ RUN make
 WORKDIR /whisper/models
 RUN sh ./download-ggml-model.sh base.en
 
-FROM node:22-bookworm-slim AS base
+FROM node:22-bookworm-slim@sha256:4b150b48b4116e2a22f2c39cc27025fbf4f153e2078fd3b14d159fdb5c7279da AS base
 ENV DEBIAN_FRONTEND=noninteractive
 WORKDIR /app
 RUN apt update
