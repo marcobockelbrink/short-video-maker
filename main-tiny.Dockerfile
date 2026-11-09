@@ -1,4 +1,4 @@
-FROM ubuntu:22.04 AS install-whisper
+FROM ubuntu:22.04@sha256:076e7bf82319619f28dd0aa9c02ab34b055ad37100395b4f49a2ffba04fb5e11 AS install-whisper
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt update
 # whisper install dependencies
@@ -18,7 +18,7 @@ RUN sh ./download-ggml-model.sh tiny.en
 # Abwandlung: mehrsprachiges Modell, damit deutsche Untertitel funktionieren
 RUN sh ./download-ggml-model.sh small
 
-FROM node:22-bookworm-slim AS base
+FROM node:22-bookworm-slim@sha256:5ec23b7c622b00547753bc6ffd78085dd868a68aeb41c8e0a1418f033e13d96d AS base
 ENV DEBIAN_FRONTEND=noninteractive
 WORKDIR /app
 RUN apt update
