@@ -18,7 +18,7 @@ RUN sh ./download-ggml-model.sh tiny.en
 # Abwandlung: mehrsprachiges Modell, damit deutsche Untertitel funktionieren
 RUN sh ./download-ggml-model.sh small
 
-FROM node:22-bookworm-slim AS base
+FROM node:22-bookworm-slim@sha256:e9f565d32859f0cbfb52125eafe8be39390f24dac302dc3cdf566e8ba3ab21ee AS base
 ENV DEBIAN_FRONTEND=noninteractive
 WORKDIR /app
 RUN apt update
