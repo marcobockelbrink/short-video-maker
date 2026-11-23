@@ -44,7 +44,7 @@
   ],
   "author": "David Gyori",
   "license": "MIT",
-  "packageManager": "pnpm@9.15.9",
+  "packageManager": "pnpm@10.34.5",
   "pnpm": {
     "overrides": {
       "sharp": "^0.35.5"
