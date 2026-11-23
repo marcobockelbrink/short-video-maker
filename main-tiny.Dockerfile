@@ -54,7 +54,7 @@ ENV PATH="$PNPM_HOME:$PATH"
 ENV COREPACK_ENABLE_DOWNLOAD_PROMPT=0
 # shared corepack cache, so the unprivileged user finds the pinned pnpm
 ENV COREPACK_HOME=/corepack
-RUN corepack enable && corepack prepare pnpm@9.15.9 --activate
+RUN corepack enable
 
 FROM base AS prod-deps
 COPY package.json pnpm-lock.yaml* /app/

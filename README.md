@@ -182,6 +182,8 @@ services:
 
 ```
 
+The images run as an unprivileged user with uid 1000 (`node`, or `app` in the CUDA image). On Linux, a mounted directory has to be writable for that uid, e.g. `mkdir -p videos && sudo chown 1000:1000 videos`. Directories created by older images that ran as root need the same `chown`.
+
 If you are using the [Self-hosted AI starter kit](https://github.com/n8n-io/self-hosted-ai-starter-kit) you want to add `networks: ['demo']` to the\*\* `short-video-maker` service so you can reach it with http://short-video-maker:3123 in n8n.
 
 # NPM

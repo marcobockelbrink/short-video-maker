@@ -86,8 +86,8 @@ RUN pnpm build
 FROM base
 # run as an unprivileged user (Trivy DS-0002); it needs to write to
 # /app/data and to node_modules (browser shell, models)
-RUN groupadd --system app \
-    && useradd --system --gid app --create-home --home-dir /home/app app \
+RUN groupadd --system --gid 1000 app \
+    && useradd --system --uid 1000 --gid app --create-home --home-dir /home/app app \
     && install -d -o app -g app /app /app/data /app/data/libs
 COPY --chown=app:app static /app/static
 COPY --chown=app:app --from=install-whisper /app/data/libs/whisper /app/data/libs/whisper

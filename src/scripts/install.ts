@@ -35,4 +35,6 @@ install()
   })
   .catch((error: unknown) => {
     logger.error(error, "Installation failed");
+    // fail the image build instead of shipping a half-installed image
+    process.exitCode = 1;
   });
