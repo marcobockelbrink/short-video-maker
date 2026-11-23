@@ -71,7 +71,7 @@ ENV COREPACK_HOME=/corepack
 RUN corepack enable
 
 FROM base AS prod-deps
-COPY package.json pnpm-lock.yaml* /app/
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml /app/
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --prod --frozen-lockfile
 RUN pnpm install --prefer-offline --no-cache --prod
 

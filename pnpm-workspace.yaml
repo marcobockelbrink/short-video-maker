@@ -1,0 +1,21 @@
+# pnpm settings (pnpm 10 reads them here, pnpm 11+ only here)
+overrides:
+  sharp: ^0.35.5
+
+# pnpm 10 no longer runs dependency build scripts unless listed here.
+# These keep the behaviour of pnpm 9:
+onlyBuiltDependencies:
+  - "@ffmpeg-installer/darwin-arm64"
+  - "@ffmpeg-installer/darwin-x64"
+  - "@ffmpeg-installer/linux-arm"
+  - "@ffmpeg-installer/linux-arm64"
+  - "@ffmpeg-installer/linux-ia32"
+  - "@ffmpeg-installer/linux-x64"
+  - "@ffmpeg-installer/win32-ia32"
+  - "@ffmpeg-installer/win32-x64"
+  - esbuild
+  - onnxruntime-node
+
+# postinstall only prints a version hint
+ignoredBuiltDependencies:
+  - protobufjs
