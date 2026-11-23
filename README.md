@@ -6,7 +6,7 @@
 > - The key is read from `PIXABAY_API_KEY` (free: <https://pixabay.com/api/docs/>) instead of `PEXELS_API_KEY`.
 > - pnpm is pinned via `packageManager` in `package.json` (used by CI, Renovate and corepack in the images). pnpm settings live in `pnpm-workspace.yaml`: the sharp override and the dependencies whose build scripts may run (`onlyBuiltDependencies`); without that list pnpm 10+ skips them or aborts with `ERR_PNPM_IGNORED_BUILDS`.
 > - `video-server.sh` starts and stops the container on demand (no autostart, bound to 127.0.0.1). The key goes into a local `.env`, never into the repository.
-> - Not adapted: the upstream tests (`Pexels.test.ts`) still describe the Pexels behaviour. The voice-over is still English only.
+> - `Pexels.test.ts` tests the Pixabay search with mocked responses (nock), so the tests need no API key. CI runs lint, type checks and tests (`.github/workflows/ci.yml`). The voice-over is still English only.
 >
 > Build: `docker build -f main-tiny.Dockerfile -t short-video-maker:lokal .`
 >

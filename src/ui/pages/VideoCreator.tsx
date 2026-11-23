@@ -52,20 +52,18 @@ const VideoCreator: React.FC = () => {
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [voices, setVoices] = useState<VoiceEnum[]>([]);
-  const [musicTags, setMusicTags] = useState<MusicMoodEnum[]>([]);
   const [loadingOptions, setLoadingOptions] = useState(true);
 
   useEffect(() => {
     const fetchOptions = async () => {
       try {
-        const [voicesResponse, musicResponse] = await Promise.all([
+        // The selects list the enum values, because the API validates the
+        // request against them (with Piper, /api/voices returns the model
+        // name instead). The request only checks that the server answers.
+        await Promise.all([
           axios.get("/api/voices"),
           axios.get("/api/music-tags"),
         ]);
-
-        setVoices(voicesResponse.data);
-        setMusicTags(musicResponse.data);
       } catch (err) {
         console.error("Failed to fetch options:", err);
         setError(
@@ -101,7 +99,10 @@ const VideoCreator: React.FC = () => {
     setScenes(newScenes);
   };
 
-  const handleConfigChange = (field: keyof RenderConfig, value: any) => {
+  const handleConfigChange = <K extends keyof RenderConfig>(
+    field: K,
+    value: RenderConfig[K],
+  ) => {
     setConfig({ ...config, [field]: value });
   };
 
@@ -257,7 +258,9 @@ const VideoCreator: React.FC = () => {
                 <InputLabel>Music Mood</InputLabel>
                 <Select
                   value={config.music}
-                  onChange={(e) => handleConfigChange("music", e.target.value)}
+                  onChange={(e) =>
+                    handleConfigChange("music", e.target.value as MusicMoodEnum)
+                  }
                   label="Music Mood"
                   required
                 >
@@ -276,7 +279,10 @@ const VideoCreator: React.FC = () => {
                 <Select
                   value={config.captionPosition}
                   onChange={(e) =>
-                    handleConfigChange("captionPosition", e.target.value)
+                    handleConfigChange(
+                      "captionPosition",
+                      e.target.value as CaptionPositionEnum,
+                    )
                   }
                   label="Caption Position"
                   required
@@ -308,7 +314,9 @@ const VideoCreator: React.FC = () => {
                 <InputLabel>Default Voice</InputLabel>
                 <Select
                   value={config.voice}
-                  onChange={(e) => handleConfigChange("voice", e.target.value)}
+                  onChange={(e) =>
+                    handleConfigChange("voice", e.target.value as VoiceEnum)
+                  }
                   label="Default Voice"
                   required
                 >
@@ -327,7 +335,10 @@ const VideoCreator: React.FC = () => {
                 <Select
                   value={config.orientation}
                   onChange={(e) =>
-                    handleConfigChange("orientation", e.target.value)
+                    handleConfigChange(
+                      "orientation",
+                      e.target.value as OrientationEnum,
+                    )
                   }
                   label="Orientation"
                   required
@@ -347,7 +358,10 @@ const VideoCreator: React.FC = () => {
                 <Select
                   value={config.musicVolume}
                   onChange={(e) =>
-                    handleConfigChange("musicVolume", e.target.value)
+                    handleConfigChange(
+                      "musicVolume",
+                      e.target.value as MusicVolumeEnum,
+                    )
                   }
                   label="Volume of the background audio"
                   required

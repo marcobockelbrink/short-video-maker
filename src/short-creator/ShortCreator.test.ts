@@ -34,7 +34,9 @@ vi.mock("fs-extra", async () => {
     ensureDirSync: vi.fn((path) => {
       try {
         memfs.mkdirSync(path, { recursive: true });
-      } catch (error) {}
+      } catch {
+        // ignore paths that do not exist in the mocked file system
+      }
     }),
     removeSync: vi.fn((path) => {
       try {
@@ -45,7 +47,9 @@ vi.mock("fs-extra", async () => {
         } else {
           memfs.unlinkSync(path);
         }
-      } catch (error) {}
+      } catch {
+        // ignore paths that do not exist in the mocked file system
+      }
     }),
     createWriteStream: vi.fn(() => ({
       on: vi.fn(),
