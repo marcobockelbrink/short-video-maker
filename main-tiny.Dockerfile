@@ -1,8 +1,8 @@
 FROM ubuntu:22.04 AS install-whisper
 ENV DEBIAN_FRONTEND=noninteractive
-RUN apt update
 # whisper install dependencies
-RUN apt install -y \
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    ca-certificates \
     git \
     build-essential \
     wget \
@@ -21,8 +21,8 @@ RUN sh ./download-ggml-model.sh small
 FROM node:22-bookworm-slim AS base
 ENV DEBIAN_FRONTEND=noninteractive
 WORKDIR /app
-RUN apt update
-RUN apt install -y \
+RUN apt-get update && apt-get install -y --no-install-recommends \
+      ca-certificates \
       # whisper dependencies
       git \
       wget \
@@ -52,6 +52,8 @@ RUN apt install -y \
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 ENV COREPACK_ENABLE_DOWNLOAD_PROMPT=0
+# shared corepack cache, so the unprivileged user finds the pinned pnpm
+ENV COREPACK_HOME=/corepack
 RUN corepack enable && corepack prepare pnpm@9.15.9 --activate
 
 FROM base AS prod-deps
@@ -89,11 +91,17 @@ RUN set -eux; \
     echo "7e64762d8e5118bb578f2eea6207e1a35a8e0c30595010b666f983fc87bb7819  /opt/piper/voices/de_DE-thorsten-medium.onnx" | sha256sum -c -; \
     echo "974adee790533adb273a1ac88f49027d2a1b8f0f2cf4905954a4791e79264e85  /opt/piper/voices/de_DE-thorsten-medium.onnx.json" | sha256sum -c -; \
     rm /tmp/piper.tgz
-COPY static /app/static
-COPY --from=install-whisper /whisper /app/data/libs/whisper
-COPY --from=prod-deps /app/node_modules /app/node_modules
-COPY --from=build /app/dist /app/dist
-COPY package.json /app/
+# run as the unprivileged "node" user of the base image (Trivy DS-0002);
+# it needs to write to /app/data and to node_modules (browser shell, models)
+RUN install -d -o node -g node /app /app/data /app/data/libs
+COPY --chown=node:node static /app/static
+COPY --chown=node:node --from=install-whisper /whisper /app/data/libs/whisper
+COPY --chown=node:node --from=prod-deps /app/node_modules /app/node_modules
+COPY --chown=node:node --from=build /app/dist /app/dist
+COPY --chown=node:node package.json /app/
+# pnpm version from "packageManager" in package.json
+RUN corepack install && chown -R node:node /corepack
+USER node
 
 # app configuration via environment variables
 ENV DATA_DIR_PATH=/app/data

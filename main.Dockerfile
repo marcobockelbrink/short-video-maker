@@ -1,8 +1,8 @@
 FROM ubuntu:22.04 AS install-whisper
 ENV DEBIAN_FRONTEND=noninteractive
-RUN apt update
 # whisper install dependencies
-RUN apt install -y \
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    ca-certificates \
     git \
     build-essential \
     wget \
@@ -19,8 +19,8 @@ RUN sh ./download-ggml-model.sh base.en
 FROM node:22-bookworm-slim AS base
 ENV DEBIAN_FRONTEND=noninteractive
 WORKDIR /app
-RUN apt update
-RUN apt install -y \
+RUN apt-get update && apt-get install -y --no-install-recommends \
+      ca-certificates \
       # whisper dependencies
       git \
       wget \
@@ -50,6 +50,8 @@ RUN apt install -y \
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 ENV COREPACK_ENABLE_DOWNLOAD_PROMPT=0
+# shared corepack cache, so the unprivileged user finds the pinned pnpm
+ENV COREPACK_HOME=/corepack
 RUN corepack enable
 
 FROM base AS prod-deps
@@ -66,11 +68,17 @@ RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
 RUN pnpm build
 
 FROM base
-COPY static /app/static
-COPY --from=install-whisper /whisper /app/data/libs/whisper
-COPY --from=prod-deps /app/node_modules /app/node_modules
-COPY --from=build /app/dist /app/dist
-COPY package.json /app/
+# run as the unprivileged "node" user of the base image (Trivy DS-0002);
+# it needs to write to /app/data and to node_modules (browser shell, models)
+RUN install -d -o node -g node /app /app/data /app/data/libs
+COPY --chown=node:node static /app/static
+COPY --chown=node:node --from=install-whisper /whisper /app/data/libs/whisper
+COPY --chown=node:node --from=prod-deps /app/node_modules /app/node_modules
+COPY --chown=node:node --from=build /app/dist /app/dist
+COPY --chown=node:node package.json /app/
+# pnpm version from "packageManager" in package.json
+RUN corepack install && chown -R node:node /corepack
+USER node
 
 # app configuration via environment variables
 ENV DATA_DIR_PATH=/app/data

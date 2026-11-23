@@ -21,22 +21,22 @@ RUN sh ./models/download-ggml-model.sh medium.en
 FROM ${BASE_CUDA_RUN_CONTAINER} AS base
 
 # install node
-RUN apt-get update && apt-get install -y \
+RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
     ca-certificates \
     gnupg \
     lsb-release \
     && rm -rf /var/lib/apt/lists/*
 RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
-    && apt-get update && apt-get install -y nodejs \
+    && apt-get update && apt-get install -y --no-install-recommends nodejs \
     && rm -rf /var/lib/apt/lists/*
 RUN node -v && npm -v
 
 # install dependencies
 ENV DEBIAN_FRONTEND=noninteractive
 WORKDIR /app
-RUN apt update
-RUN apt install -y \
+RUN apt-get update && apt-get install -y --no-install-recommends \
+      ca-certificates \
       # whisper dependencies
       git \
       wget \
@@ -66,6 +66,8 @@ RUN apt install -y \
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 ENV COREPACK_ENABLE_DOWNLOAD_PROMPT=0
+# shared corepack cache, so the unprivileged user finds the pinned pnpm
+ENV COREPACK_HOME=/corepack
 RUN corepack enable
 
 FROM base AS prod-deps
@@ -82,11 +84,19 @@ RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
 RUN pnpm build
 
 FROM base
-COPY static /app/static
-COPY --from=install-whisper /app/data/libs/whisper /app/data/libs/whisper
-COPY --from=prod-deps /app/node_modules /app/node_modules
-COPY --from=build /app/dist /app/dist
-COPY package.json /app/
+# run as an unprivileged user (Trivy DS-0002); it needs to write to
+# /app/data and to node_modules (browser shell, models)
+RUN groupadd --system app \
+    && useradd --system --gid app --create-home --home-dir /home/app app \
+    && install -d -o app -g app /app /app/data /app/data/libs
+COPY --chown=app:app static /app/static
+COPY --chown=app:app --from=install-whisper /app/data/libs/whisper /app/data/libs/whisper
+COPY --chown=app:app --from=prod-deps /app/node_modules /app/node_modules
+COPY --chown=app:app --from=build /app/dist /app/dist
+COPY --chown=app:app package.json /app/
+# pnpm version from "packageManager" in package.json
+RUN corepack install && chown -R app:app /corepack
+USER app
 
 # app configuration via environment variables
 ENV DATA_DIR_PATH=/app/data
