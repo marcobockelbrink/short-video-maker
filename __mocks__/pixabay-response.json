@@ -1,0 +1,66 @@
+{
+  "total": 2,
+  "totalHits": 2,
+  "hits": [
+    {
+      "id": 1001,
+      "pageURL": "https://pixabay.com/videos/id-1001/",
+      "type": "film",
+      "tags": "dog, pet, couch",
+      "duration": 12,
+      "videos": {
+        "large": {
+          "url": "https://cdn.pixabay.com/video/test/1001-large.mp4",
+          "width": 2160,
+          "height": 3840,
+          "size": 1000000,
+          "thumbnail": "https://cdn.pixabay.com/video/test/1001-large.jpg"
+        },
+        "medium": {
+          "url": "https://cdn.pixabay.com/video/test/1001-medium.mp4",
+          "width": 1080,
+          "height": 1920,
+          "size": 1000000,
+          "thumbnail": "https://cdn.pixabay.com/video/test/1001-medium.jpg"
+        },
+        "small": {
+          "url": "https://cdn.pixabay.com/video/test/1001-small.mp4",
+          "width": 720,
+          "height": 1280,
+          "size": 1000000,
+          "thumbnail": "https://cdn.pixabay.com/video/test/1001-small.jpg"
+        },
+        "tiny": {
+          "url": "https://cdn.pixabay.com/video/test/1001-tiny.mp4",
+          "width": 360,
+          "height": 640,
+          "size": 1000000,
+          "thumbnail": "https://cdn.pixabay.com/video/test/1001-tiny.jpg"
+        }
+      }
+    },
+    {
+      "id": 1002,
+      "pageURL": "https://pixabay.com/videos/id-1002/",
+      "type": "film",
+      "tags": "dog, park",
+      "duration": 20,
+      "videos": {
+        "large": {
+          "url": "https://cdn.pixabay.com/video/test/1002-large.mp4",
+          "width": 1920,
+          "height": 1080,
+          "size": 1000000,
+          "thumbnail": "https://cdn.pixabay.com/video/test/1002-large.jpg"
+        },
+        "medium": {
+          "url": "https://cdn.pixabay.com/video/test/1002-medium.mp4",
+          "width": 1280,
+          "height": 720,
+          "size": 1000000,
+          "thumbnail": "https://cdn.pixabay.com/video/test/1002-medium.jpg"
+        }
+      }
+    }
+  ]
+}

@@ -27,10 +27,10 @@ export class Piper implements Tts {
     return new Piper(binary, model, config.tempDirPath);
   }
 
+  // Die Stimme steckt im Modell; der Wert aus der Anfrage (Kokoro-Name) zählt
+  // nicht. Darum fehlt der zweite Parameter aus der Tts-Schnittstelle.
   async generate(
     text: string,
-    // Die Stimme steckt im Modell; der Wert aus der Anfrage (Kokoro-Name) zählt nicht.
-    _voice?: string,
   ): Promise<{ audio: ArrayBuffer; audioLength: number }> {
     const ausgabe = path.join(this.tempDir, `${cuid()}-piper.wav`);
     try {
