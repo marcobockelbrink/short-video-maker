@@ -30,7 +30,7 @@ function formatZodError(error: ZodError): ValidationErrorResult {
   const missingFields: Record<string, string> = {};
 
   // Extract all the errors into a human-readable format
-  error.errors.forEach((err) => {
+  error.issues.forEach((err) => {
     const path = err.path.join(".");
     missingFields[path] = err.message;
   });
