@@ -44,12 +44,7 @@
   ],
   "author": "David Gyori",
   "license": "MIT",
-  "packageManager": "pnpm@9.15.9",
-  "pnpm": {
-    "overrides": {
-      "sharp": "^0.35.5"
-    }
-  },
+  "packageManager": "pnpm@10.34.5",
   "dependencies": {
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
