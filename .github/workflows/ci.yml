@@ -28,6 +28,9 @@ jobs:
           node-version: 22
           cache: pnpm
       - run: pnpm install --frozen-lockfile
+        env:
+          # The runner has no GPU; the CUDA binaries are not needed for tests.
+          ONNXRUNTIME_NODE_INSTALL_CUDA: skip
       - run: pnpm run lint
       - run: pnpm exec tsc --noEmit -p tsconfig.build.json
       - run: pnpm exec tsc -p tsconfig.ui.json
