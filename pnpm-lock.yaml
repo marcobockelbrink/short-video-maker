@@ -106,64 +106,64 @@ importers:
         version: 3.25.2(zod@4.6.7)
     devDependencies:
       '@remotion/eslint-config-flat':
-        specifier: ^4.0.545
+        specifier: 4.0.545
         version: 4.0.545(eslint@9.39.5(jiti@1.21.7))
       '@types/content-type':
-        specifier: ^1.1.9
+        specifier: 1.1.9
         version: 1.1.9
       '@types/express':
-        specifier: ^4.17.25
+        specifier: 4.17.25
         version: 4.17.25
       '@types/fluent-ffmpeg':
-        specifier: ^2.1.28
+        specifier: 2.1.28
         version: 2.1.28
       '@types/fs-extra':
-        specifier: ^11.0.4
+        specifier: 11.0.4
         version: 11.0.4
       '@types/nock':
-        specifier: ^11.1.0
+        specifier: 11.1.0
         version: 11.1.0
       '@types/node':
-        specifier: ^22.20.5
+        specifier: 22.20.5
         version: 22.20.5
       '@types/react':
         specifier: 19.3.0
         version: 19.3.0
       '@vitejs/plugin-react':
-        specifier: ^4.7.0
+        specifier: 4.7.0
         version: 4.7.0(vite@6.4.5(@types/node@22.20.5)(jiti@1.21.7)(terser@5.51.2)(yaml@2.7.1))
       autoprefixer:
-        specifier: ^10.6.1
+        specifier: 10.6.1
         version: 10.6.1(postcss@8.5.30)
       eslint:
-        specifier: ^9.39.5
+        specifier: 9.39.5
         version: 9.39.5(jiti@1.21.7)
       memfs:
-        specifier: ^4.80.1
+        specifier: 4.80.1
         version: 4.80.1
       postcss:
-        specifier: ^8.5.30
+        specifier: 8.5.30
         version: 8.5.30
       prettier:
-        specifier: ^3.9.10
+        specifier: 3.9.10
         version: 3.9.10
       rimraf:
-        specifier: ^6.1.3
+        specifier: 6.1.3
         version: 6.1.3
       tailwindcss:
-        specifier: ^3.4.19
+        specifier: 3.4.19
         version: 3.4.19(yaml@2.7.1)
       ts-node:
-        specifier: ^10.9.2
+        specifier: 10.9.2
         version: 10.9.2(@types/node@22.20.5)(typescript@5.9.3)
       typescript:
-        specifier: ^5.9.3
+        specifier: 5.9.3
         version: 5.9.3
       vite:
-        specifier: ^6.4.4
+        specifier: 6.4.5
         version: 6.4.5(@types/node@22.20.5)(jiti@1.21.7)(terser@5.51.2)(yaml@2.7.1)
       vitest:
-        specifier: ^4.1.11
+        specifier: 4.1.11
         version: 4.1.11(@types/node@22.20.5)(jsdom@26.0.0)(vite@6.4.5(@types/node@22.20.5)(jiti@1.21.7)(terser@5.51.2)(yaml@2.7.1))
 
 packages:
@@ -1819,9 +1819,6 @@ packages:
 
   '@types/estree@1.0.10':
     resolution: {integrity: sha512-lTyOMnOcmRBzdCv6/4zUZCrEhV0xrqQiUZBZtVcbmLHBXKLnN8q89v/wKRF/Q0HbwVsqbIG3o5HDoFl9sduM+g==}
-
-  '@types/estree@1.0.9':
-    resolution: {integrity: sha512-GhdPgy1el4/ImP05X05Uw4cw2/M93BCUmnEvWZNStlCzEKME4Fkk+YpoA5OiHNQmoS7Cafb8Xa3Pya8m1Qrzeg==}
 
   '@types/express-serve-static-core@4.19.9':
     resolution: {integrity: sha512-QP2ESEe/ImWY0HDwNAnK9PvEffUyhLTnWkk7KXzHfyeWAnlrDe1fN77bXl6ia8KT3wPlmA7t9/VPRpnf4Ex9sg==}
@@ -5856,16 +5853,14 @@ snapshots:
   '@types/eslint-scope@3.7.7':
     dependencies:
       '@types/eslint': 9.6.1
-      '@types/estree': 1.0.9
+      '@types/estree': 1.0.10
 
   '@types/eslint@9.6.1':
     dependencies:
-      '@types/estree': 1.0.9
+      '@types/estree': 1.0.10
       '@types/json-schema': 7.0.15
 
   '@types/estree@1.0.10': {}
-
-  '@types/estree@1.0.9': {}
 
   '@types/express-serve-static-core@4.19.9':
     dependencies:
@@ -6715,7 +6710,7 @@ snapshots:
       '@humanfs/node': 0.16.8
       '@humanwhocodes/module-importer': 1.0.1
       '@humanwhocodes/retry': 0.4.3
-      '@types/estree': 1.0.9
+      '@types/estree': 1.0.10
       ajv: 6.15.0
       chalk: 4.1.2
       cross-spawn: 7.0.6
@@ -6765,7 +6760,7 @@ snapshots:
 
   estree-walker@3.0.3:
     dependencies:
-      '@types/estree': 1.0.9
+      '@types/estree': 1.0.10
 
   esutils@2.0.3: {}
 
@@ -8342,7 +8337,7 @@ snapshots:
   webpack@5.105.0(esbuild@0.28.1)(postcss@8.5.30):
     dependencies:
       '@types/eslint-scope': 3.7.7
-      '@types/estree': 1.0.9
+      '@types/estree': 1.0.10
       '@types/json-schema': 7.0.15
       '@webassemblyjs/ast': 1.14.1
       '@webassemblyjs/wasm-edit': 1.14.1
